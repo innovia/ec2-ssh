@@ -4,7 +4,7 @@ require 'thor'
 require 'ec2-ssh'
 
 def help
-  Ec2Ssh::Cli.help(Thor::Base.shell.new) 
+  Ec2Ssh::Cli.start(%w{help connect})
 end
 
 
