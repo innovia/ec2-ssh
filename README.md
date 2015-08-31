@@ -16,11 +16,48 @@ Groups were designed in this case to relieve problems (mass Git checkouts) where
 
 Sequential runs were intended to be used for rolling restarts, amongst other similar use-cases.
 
-
---terminal will open multiple terminals windows of all servers found (currently only supported on OSX iTerm2)
-
 if the instance is on a private subnet (given you have a VPN connection) it will fallback to connecting using the internal IP address
 
+##examples:
+
+--terminal (-t) will open multiple terminals windows of all servers found (currently only supported on OSX iTerm2)
+````bash
+$ ec2-ssh -t --tag-value ElasticSearch
+````
+-------------------
+upload / download separate source,destination with a comma
+````bash
+$ ec2-ssh --download /home/ec2-user/file.txt,~/Downloads --tag-value ElasticSearch
+````
+-------------------
+coonect to instances filter by custom tag
+````bash
+$ ec2-ssh --tag-key staging --tag-value true --cmd 'touch /tmp/test'
+````
+-------------------
+pass profile of aws/credentials to use different accounts on AWS
+(http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+````bash
+$ ec2-ssh --tag-value ElasticSearch --profile otherAccountName --cmd 'touch /tmp/test'
+````
+-------------------
+
+connect by selecting autoscale group name
+
+````bash
+$ ec2-ssh --as --cmd 'touch /tmp/test'
+
+0: ElasticSearch-ElasticSearchServerGroup1
+1: KibanaServerGroup
+3: LogstashServerGroup
+4: ...
+````
+simply selct the number corresponding to the autoscale group (limit of AWS SDk is to fetch maximum 100 AutoScale Groups)
+
+-------------------
+
+
+##Possible command line options
 ````bash
 Usage:
   ec2-ssh connect
