@@ -11,7 +11,7 @@ module Ec2Ssh::Cli::Aws
   end
 
   def get_auto_scale_groups
-    say "Fetching AutoScale Groups - please wait..."
+    say "Fetching AutoScale groups from #{@region} please wait..."
       @as_groups = @as.describe_auto_scaling_groups.auto_scaling_groups
 
       as_group_names = @as_groups.inject([]) {|acc, asg| acc << asg.auto_scaling_group_name; acc }

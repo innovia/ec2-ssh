@@ -17,7 +17,7 @@ class Ec2Ssh::Cli  < Thor
   default_task :connect
 
   desc "connect", "Connect to autoscale instance (random instance), Pass --cmd='whatever' to run a cmd on the server (use ; to seperate commands)"
-  method_option :cmd,                              :desc => 'commmand to run on remote servers', :required => true
+  method_option :cmd,                              :desc => 'commmand to run on remote servers'
   method_option :profile,                          :desc => 'aws cli profile', :default => 'default'
   method_option :region,                           :desc => "region", :default => 'us-east-1'
   method_option :user,            :aliases => 'u', :desc => 'run as user', :default => 'ec2-user'
@@ -26,7 +26,7 @@ class Ec2Ssh::Cli  < Thor
   method_option :groups,          :aliases => 'g', :desc => 'run in groups'
   method_option :groups_limit,    :aliases => 'l', :desc => 'limit', :type => :numeric
   method_option :wait,            :aliases => 'w', :desc => 'wait',  :type => :numeric
-  method_option :as,                               :desc => 'get autoscale groups'
+  method_option :as,                               :desc => 'display interactive choices for autoscale groups'
   method_option :tag_key,                          :desc => 'tag key to filter instances by', :default => 'Name'
   method_option :tag_value,                        :desc => 'tag value to filter instances by'
   method_option :terminal,        :aliases => 't', :desc => 'open terminal tabs for all servers'
@@ -34,6 +34,7 @@ class Ec2Ssh::Cli  < Thor
     extend Aws
     extend Ssh
     extend Utils
+
     set_ssh(options[:user])
     aws_init(options[:profile], options[:region])
       
@@ -52,17 +53,16 @@ class Ec2Ssh::Cli  < Thor
         exit 1
       end
 
-      mode = :parallel if options[:parallel]
+      mode = :parallel if options[:parallel] || mode.nil?
       mode = :groups   if options[:groups]
       mode = :sequence if options[:sequence]
 
-      mode = :parallel if mode.nil? 
       dsl_options = {}
       dsl_options[:in] = mode
       dsl_options[:wait]  = options[:wait] if options[:wait]
       dsl_options[:limit] = options[:groups_limit] if options[:groups_limit]
       
-      say "dsl opts: #{dsl_options}", color = :cyan
+      say "user: #{options[:user]}\ndsl_options: #{dsl_options}\ncmd: #{options[:cmd]}", color = :cyan
       ssh_to(options[:user], dsl_options, options[:cmd])
     end
   end
